@@ -1,0 +1,11 @@
+### IDEA ###
+.idea/*
+*.iml
+*/target/*
+*/*.iml
+
+docker-data/wasai/mysql-data/*
+docker-data/wasai/redis-data/*
+docker-data/wasai/rest/conf/*
+docker-data/wasai/rest/lib/*
+docker-data/wasai/rest/log/*

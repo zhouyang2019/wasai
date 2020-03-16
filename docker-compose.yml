@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+  wasai-mysql:
+    image: mysql:5.7
+    restart: always
+    container_name: wasai-mysql
+    ports:
+      - 33061:3306
+    environment:
+      - MYSQL_DATABASE=wasai
+      - MYSQL_USER=wasai
+      - MYSQL_PASSWORD=123456
+      - MYSQL_ROOT_PASSWORD=123456
+    volumes:
+      - ./docker-data/wasai/mysql-data:/var/lib/mysql
+
+  wasai-redis:
+    image: redis:latest
+    container_name: wasai-redis
+    command: redis-server --requirepass 123456
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    volumes:
+      - ./docker-data/wasai/redis-data:/var/lib/redis
+
+  wasai-rest:
+    image: openjdk:8-jdk-alpine
+    container_name: wasai-rest
+    ports:
+      - 8888:8888
+    command: java -Xmx512m -DLOG_PATH=/docker/log -DCONFIG_HOME=/docker/conf -Dlogback.level=INFO -jar /docker/lib/wasai-rest.jar --spring.config.location=/docker/conf/application.properties
+    volumes:
+      - ./docker-data/wasai/rest/conf:/docker/conf
+      - ./docker-data/wasai/rest/lib:/docker/lib
+      - ./docker-data/wasai/rest/log:/docker/log
