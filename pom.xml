@@ -16,8 +16,7 @@
     </modules>
 
     <name>wasai</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <url>https://github.com/zhouyang2019/wasai</url>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

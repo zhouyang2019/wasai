@@ -2,6 +2,7 @@ package com.zy.datasource;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.plugin.Interceptor;
@@ -10,7 +11,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -34,13 +34,16 @@ public class DatasourceConfig {
 
     @Bean(destroyMethod = "close")
     public DataSource dataSource() {
-        return DataSourceBuilder.create()
-                .type(HikariDataSource.class)
-                .driverClassName(env.getProperty("db.driver.classname"))
-                .url(env.getProperty("db.url"))
-                .username(env.getProperty("db.username"))
-                .password(env.getProperty("db.password"))
-                .build();
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDriverClassName(env.getProperty("db.driver.classname"));
+        hikariConfig.setJdbcUrl(env.getProperty("db.url"));
+        hikariConfig.setUsername(env.getProperty("db.username"));
+        hikariConfig.setPassword(env.getProperty("db.password"));
+        hikariConfig.addDataSourceProperty("tcpKeepAlive", true);
+
+        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+        dataSource.setLeakDetectionThreshold(env.getProperty("leak.detect", Long.class, 10000L));
+        return dataSource;
     }
 
     @Bean
